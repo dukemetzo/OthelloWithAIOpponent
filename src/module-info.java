@@ -4,4 +4,6 @@ module com.example {
 
     opens com.example.scenecontrollers to javafx.fxml;
     exports com.example.scenecontrollers;
+    exports com.example.backend;
+    opens com.example.backend to javafx.fxml;
 }

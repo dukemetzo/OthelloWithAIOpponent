@@ -9,7 +9,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         GameController gameController = new GameController();
-        Scene scene = new Scene(gameController.getContent(), 400, 400, Color.GREEN);
+        Scene scene = new Scene(gameController.getContent(), 1100, 700, Color.GREEN);
         stage.setScene(scene);
         stage.show();
     }

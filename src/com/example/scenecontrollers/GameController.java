@@ -83,17 +83,19 @@ public class GameController implements Controller {
         stackPane.getChildren().add(circle);
 
         stackPane.setOnMouseClicked(event -> {
-            if (currentGame.currentPlayer == OthelloGame.BLACK) {
-                if (currentGame.makeMove(row, col)) {
+            if (currentGame.makeMove(row, col)) {
+                if (currentGame.currentPlayer == OthelloGame.WHITE) {
                     circle.setFill(Color.BLACK);
-                    updateGameBoard();
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Invalid Move");
-                    alert.setHeaderText(null);
-                    alert.setContentText("You cannot place a token there.");
-                    alert.showAndWait();
+                    circle.setFill(Color.WHITE);
                 }
+                updateGameBoard();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Move");
+                alert.setHeaderText(null);
+                alert.setContentText("You cannot place a token there.");
+                alert.showAndWait();
             }
         });
         return stackPane;
@@ -105,11 +107,6 @@ public class GameController implements Controller {
                 StackPane playedToken = updateToken(i, j);
                 gameBoard.add(playedToken, i, j);
             }
-        }
-        if (currentGame.currentPlayer == OthelloGame.WHITE) {
-            List<Integer> opponentMove = AIOpponent.alphaBetaSearch(currentGame);
-            currentGame.makeMove(opponentMove.get(0), opponentMove.get(1));
-            updateGameBoard();
         }
         if (currentGame.evaluateGameState()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

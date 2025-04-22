@@ -41,7 +41,10 @@ public class AIOpponent {
 			}
 			int nextPlayer = (currentPlayer == OthelloGame.BLACK) ? OthelloGame.WHITE : OthelloGame.BLACK;
 			ValueMovePair minPair = minValue(successorGameState, nextPlayer, alpha, beta);
-			pair = (pair.v >= minPair.v) ? pair.setMove(successor.getKey()) : minPair;
+			if(minPair.v > pair.v) {
+				pair = new ValueMovePair(minPair.v, successor.getKey());
+			}
+			//pair = (pair.v >= minPair.v) ? pair.setMove(successor.getKey()) : minPair;
 			if (pair.v >= beta)
 				return pair;
 			alpha = Math.max(alpha, pair.v);
@@ -62,7 +65,11 @@ public class AIOpponent {
 			}
 			int nextPlayer = (currentPlayer == OthelloGame.BLACK) ? OthelloGame.WHITE : OthelloGame.BLACK;
 			ValueMovePair maxPair = maxValue(successorGameState, nextPlayer, alpha, beta);
-			pair = (pair.v <= maxPair.v) ? pair.setMove(successor.getKey()) : maxPair;
+			if(maxPair.v < pair.v) {
+				pair = new ValueMovePair(maxPair.v, successor.getKey());
+			}
+			
+			//pair = (pair.v <= maxPair.v) ? pair.setMove(successor.getKey()) : maxPair;
 			if (pair.v <= alpha)
 				return pair;
 			beta = Math.min(beta, pair.v);

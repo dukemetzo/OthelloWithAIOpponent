@@ -86,26 +86,11 @@ public class GameController implements Controller {
 		stackPane.getChildren().add(circle);
 
 		stackPane.setOnMouseClicked(event -> {
-			//            if (currentGame.makeMove(row, col)) {
-			//                if (currentGame.currentPlayer == OthelloGame.WHITE) {
-			//                    circle.setFill(Color.BLACK);
-			//                } else {
-			//                    circle.setFill(Color.WHITE);
-			//                }
-			//                updateGameBoard();
 			if(currentGame.currentPlayer == OthelloGame.BLACK) { //user moves only black token
 				if(currentGame.makeMove(row, col)) {
 					updateGameBoard();
 
-					if(!currentGame.evaluateGameState()) { // make sure game isnt over
-						List<Integer> moveAI = AIOpponent.alphaBetaSearch(currentGame);
-						if(moveAI != null) {
-							int aiRow = moveAI.get(0);
-							int aiColumn = moveAI.get(1);
-							currentGame.makeMove(aiRow, aiColumn);
-							updateGameBoard();
-						}
-					}
+
 
 				} else {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -136,6 +121,15 @@ public class GameController implements Controller {
 				alert.setContentText("AI Opponent won");
 			}
 			alert.showAndWait();
+		}
+		if(currentGame.currentPlayer == OthelloGame.WHITE) { //AI Opponent is always white player
+			List<Integer> moveAI = AIOpponent.alphaBetaSearch(currentGame);
+			if(moveAI != null) {
+				int aiRow = moveAI.get(0);
+				int aiColumn = moveAI.get(1);
+				currentGame.makeMove(aiRow, aiColumn);
+				updateGameBoard();
+			}
 		}
 	}
 

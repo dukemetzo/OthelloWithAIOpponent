@@ -34,7 +34,7 @@ public class GameController implements Controller {
 		gameBoard.setStyle("-fx-background-color: #008000;");
 
 		//initialize game
-		currentGame = new OthelloGame(6);
+		currentGame = new OthelloGame(4);
 
 		//set tokens
 		updateGameBoard();
@@ -117,8 +117,10 @@ public class GameController implements Controller {
 			alert.setHeaderText(null);
 			if (currentGame.getWinner() == OthelloGame.BLACK) {
 				alert.setContentText("Congratulations! You won!");
-			} else {
+			} else if (currentGame.getWinner() == OthelloGame.WHITE) {
 				alert.setContentText("AI Opponent won");
+			} else {
+				alert.setContentText("Draw!");
 			}
 			alert.showAndWait();
 		}

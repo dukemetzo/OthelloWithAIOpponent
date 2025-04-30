@@ -22,6 +22,14 @@ public class AIOpponent {
 		}
 	}
 
+	public static List<Integer> getMove(OthelloGame currentGame) {
+		if (currentGame.boardSize == 4) {
+			return alphaBetaSearch(currentGame);
+		} else {
+			return heuresticSearch(currentGame);
+		}
+	}
+
 	public static List<Integer> alphaBetaSearch(OthelloGame currentGame) {
 		OthelloGame cloneGame = currentGame.clone();
 		//int nextPlayer = (currentGame.currentPlayer == OthelloGame.BLACK) ? OthelloGame.WHITE : OthelloGame.BLACK;
@@ -80,6 +88,10 @@ public class AIOpponent {
 	//Gives numerical value of terminal states. e.g. win (+1), lose(-1), and draw(0)
 	public static int calculateUtility(int[][] gameState, int currentPlayer) {
 		return OthelloGame.getWinner(gameState, currentPlayer);
+	}
+
+	public static List<Integer> heuresticSearch(OthelloGame currentGame) {
+		return new ArrayList<Integer>();
 	}
 
 	//Returns list of <Move, State> pairs specifying legal moves

@@ -2,6 +2,7 @@ package com.example.scenecontrollers;
 
 import com.example.backend.AIOpponent;
 import com.example.backend.OthelloGame;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -24,27 +25,16 @@ public class GameController implements Controller {
 	public OthelloGame currentGame;
 	public VBox vBoxLeft;
 	public VBox vBoxRight;
+	private Text blackScore;
+	private Text whiteScore;
 
 	public GameController() {
-		//initialize GUI
-		gameBoard = new GridPane();
-		gameBoard.setGridLinesVisible(true);
-		gameBoard.setAlignment(Pos.CENTER);
-		gameBoard.setPadding(new Insets(3, 3, 3, 3));
-		gameBoard.setStyle("-fx-background-color: #008000;");
-
-		//initialize game
-		currentGame = new OthelloGame(4);
-
-		//set tokens
-		updateGameBoard();
-
 		//VBox Left
 		vBoxLeft = new VBox();
 		vBoxLeft.setPadding(new Insets(100, 100, 100, 100));
 		vBoxLeft.setStyle("-fx-background-color: #000000;");
 		vBoxLeft.setAlignment(Pos.CENTER);
-		Text blackScore = new Text();
+		blackScore = new Text();
 		blackScore.setX(50.0f);
 		blackScore.setY(50.0f);
 		blackScore.setText("00");
@@ -57,7 +47,7 @@ public class GameController implements Controller {
 		vBoxRight.setPadding(new Insets(100, 100, 100, 100));
 		vBoxRight.setStyle("-fx-background-color: #FFFFFF;");
 		vBoxRight.setAlignment(Pos.CENTER);
-		Text whiteScore = new Text();
+		whiteScore = new Text();
 		whiteScore.setX(50.0f);
 		whiteScore.setY(50.0f);
 		whiteScore.setText("00");
@@ -67,6 +57,26 @@ public class GameController implements Controller {
 
 		//Border Pane
 		gameBorderPane = new BorderPane();
+
+		//initialize GUI
+		gameBoard = new GridPane();
+		gameBoard.setGridLinesVisible(true);
+		gameBoard.setAlignment(Pos.CENTER);
+		gameBoard.setPadding(new Insets(3, 3, 3, 3));
+		gameBoard.setStyle("-fx-background-color: #008000;");
+		gameBoard.setOnMouseClicked((e) -> {
+			blackScore.setText("" + currentGame.getBlackScore());
+			whiteScore.setText("" + currentGame.getWhiteScore());
+			gameBorderPane.setLeft(vBoxLeft);
+			gameBorderPane.setRight(vBoxRight);
+		});
+
+		//initialize game
+		currentGame = new OthelloGame(4);
+
+		//set tokens
+		updateGameBoard();
+
 		gameBorderPane.setCenter(gameBoard);
 		gameBorderPane.setLeft(vBoxLeft);
 		gameBorderPane.setRight(vBoxRight);
@@ -89,9 +99,6 @@ public class GameController implements Controller {
 			if(currentGame.currentPlayer == OthelloGame.BLACK) { //user moves only black token
 				if(currentGame.makeMove(row, col)) {
 					updateGameBoard();
-
-
-
 				} else {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.setTitle("Invalid Move");
@@ -125,14 +132,14 @@ public class GameController implements Controller {
 			alert.showAndWait();
 		}
 		if(currentGame.currentPlayer == OthelloGame.WHITE) { //AI Opponent is always white player
-			List<Integer> moveAI = AIOpponent.alphaBetaSearch(currentGame);
+			List<Integer> moveAI = AIOpponent.getMove(currentGame);
 			if(moveAI != null) {
 				int aiRow = moveAI.get(0);
 				int aiColumn = moveAI.get(1);
 				currentGame.makeMove(aiRow, aiColumn);
 				updateGameBoard();
 			}
-		}
+        }
 	}
 
 	@Override

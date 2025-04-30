@@ -196,12 +196,37 @@ public class OthelloGame implements Cloneable {
 		return blackScore;
 	}
 
+	//static version of method for use by AI Opponent
+	public static int getBlackScore(int[][] gameState) {
+		int blackScore = 0;
+		for (int i = 0; i < gameState.length; i++) {
+			for (int j = 0; j < gameState.length; j++) {
+				if (gameState[i][j] == BLACK)
+					blackScore++;
+			}
+		}
+		return blackScore;
+	}
+
 	public int getWhiteScore() {
 		int whiteScore = 0;
 		for (int i = 0; i < boardSize; i++) {
 			for (int j = 0; j < boardSize; j++) {
 				if (gameState[i][j] == WHITE)
 					whiteScore++;
+			}
+		}
+		return whiteScore;
+	}
+
+	//static version of method for use by AI Opponent
+	public static int getWhiteScore(int[][] gameState) {
+		int whiteScore = 0;
+		for (int i = 0; i < gameState.length; i++) {
+			for (int j = 0; j < gameState.length; j++) {
+				if (gameState[i][j] == WHITE) {
+					whiteScore++;
+				}
 			}
 		}
 		return whiteScore;

@@ -72,7 +72,7 @@ public class GameController implements Controller {
 		});
 
 		//initialize game
-		currentGame = new OthelloGame(6);
+		currentGame = new OthelloGame(8);
 
 		//set tokens
 		updateGameBoard();
@@ -112,9 +112,18 @@ public class GameController implements Controller {
 	}
 
 	private void updateGameBoard() {
+		if(currentGame.currentPlayer == OthelloGame.WHITE && !OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.WHITE)) { //AI Opponent is always white player
+			List<Integer> moveAI = AIOpponent.getMove(currentGame);
+			if(moveAI != null) {
+				int aiRow = moveAI.get(0);
+				int aiColumn = moveAI.get(1);
+				currentGame.makeMove(aiRow, aiColumn);
+			}
+		}
 		for (int i = 0; i < currentGame.boardSize; i++) {
 			for (int j = 0; j < currentGame.boardSize; j++) {
 				StackPane playedToken = updateToken(i, j);
+				gameBoard.getChildren().removeAll();
 				gameBoard.add(playedToken, i, j);
 			}
 		}
@@ -131,15 +140,7 @@ public class GameController implements Controller {
 			}
 			alert.showAndWait();
 		}
-		if(currentGame.currentPlayer == OthelloGame.WHITE) { //AI Opponent is always white player
-			List<Integer> moveAI = AIOpponent.getMove(currentGame);
-			if(moveAI != null) {
-				int aiRow = moveAI.get(0);
-				int aiColumn = moveAI.get(1);
-				currentGame.makeMove(aiRow, aiColumn);
-				updateGameBoard();
-			}
-        }
+
 	}
 
 	@Override

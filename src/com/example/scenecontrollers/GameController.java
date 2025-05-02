@@ -112,12 +112,16 @@ public class GameController implements Controller {
 	}
 
 	private void updateGameBoard() {
-		if(currentGame.currentPlayer == OthelloGame.WHITE && !OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.WHITE)) { //AI Opponent is always white player
-			List<Integer> moveAI = AIOpponent.getMove(currentGame);
-			if(moveAI != null) {
-				int aiRow = moveAI.get(0);
-				int aiColumn = moveAI.get(1);
-				currentGame.makeMove(aiRow, aiColumn);
+		if(currentGame.currentPlayer == OthelloGame.WHITE) { //AI Opponent is always white player
+			if (OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.WHITE)) {
+				currentGame.currentPlayer = OthelloGame.BLACK;
+			} else {
+				List<Integer> moveAI = AIOpponent.getMove(currentGame);
+				if(moveAI != null) {
+					int aiRow = moveAI.get(0);
+					int aiColumn = moveAI.get(1);
+					currentGame.makeMove(aiRow, aiColumn);
+				}
 			}
 		}
 		for (int i = 0; i < currentGame.boardSize; i++) {

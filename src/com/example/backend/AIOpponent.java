@@ -27,7 +27,7 @@ public class AIOpponent {
 			return alphaBetaSearch(currentGame.clone());
 		} else {
 			OthelloGame clone = currentGame.clone();
-			return heuresticSearch(clone.gameState, clone.currentPlayer);
+			return heuristicSearch(clone.gameState, clone.currentPlayer);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class AIOpponent {
 		return OthelloGame.getWinner(gameState, currentPlayer);
 	}
 
-	public static List<Integer> heuresticSearch(int[][] gameState, int currentPlayer) {
+	public static List<Integer> heuristicSearch(int[][] gameState, int currentPlayer) {
 		List<Integer> bestSuccessorMove = new ArrayList<>();
 		//int[][] bestSuccessorGameState = new int[gameState.length][gameState.length];
 		double bestEvaluation = Integer.MIN_VALUE;
@@ -116,7 +116,7 @@ public class AIOpponent {
 		double mobility = getMobility(gameState, currentPlayer);
 		double cornerOccupancy = getCornerOccupancy(gameState, currentPlayer);
 		double cornerCloseness = getCornerCloseness(gameState, currentPlayer);
-		return ((25 * diskParity) + (5 * mobility) + (30 * cornerOccupancy) - (25 * cornerCloseness)) / 85;
+		return ((25 * diskParity) + (5 * mobility) + (30 * cornerOccupancy) - (25 * cornerCloseness)) / 35;
 	}
 
 	public static double getDiskParity(int[][] gameState, int currentPlayer) {
@@ -237,7 +237,7 @@ public class AIOpponent {
 		Map<List<Integer>, List<List<Integer>>> successors = new HashMap<>();
 		for (int i = 0; i < gameState.length; i++) {
 			for (int j = 0; j < gameState.length; j++) {
-				if (OthelloGame.isValidMove(i, j, gameState, gameState.length, currentPlayer)) {
+				if (gameState[i][j] == 0 && OthelloGame.isValidMove(i, j, gameState, gameState.length, currentPlayer)) {
 					//get move
 					List<Integer> move = new ArrayList<>();
 					move.add(i);

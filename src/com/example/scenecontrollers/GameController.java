@@ -72,7 +72,7 @@ public class GameController implements Controller {
 		});
 
 		//initialize game
-		currentGame = new OthelloGame(8);
+		currentGame = new OthelloGame(6);
 
 		//set tokens
 		updateGameBoard();

@@ -38,7 +38,6 @@ public class OthelloGame implements Cloneable {
 		}
 		for (int i = 0; i < 8; i++) {
 			if (checkDirection(row, col, DX[i], DY[i], gameState, boardSize, currentPlayer)) {
-				System.out.println("Direction " + DX[i] + ", " + DY[i] + " passes checkDirection for move " + row + ", " + col);
 				return true;
 			}
 		}

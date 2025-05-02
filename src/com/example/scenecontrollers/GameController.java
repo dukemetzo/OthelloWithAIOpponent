@@ -120,9 +120,7 @@ public class GameController implements Controller {
 				if(moveAI != null) {
 					int aiRow = moveAI.get(0);
 					int aiColumn = moveAI.get(1);
-					if (currentGame.makeMove(aiRow, aiColumn))
-						System.out.println("AI move made: " + aiRow + ", " + aiColumn);
-					else System.out.println("Invalid AI move: " + aiRow + ", " + aiColumn);
+					currentGame.makeMove(aiRow, aiColumn);
 				}
 			}
 		}

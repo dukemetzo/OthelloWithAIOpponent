@@ -72,7 +72,7 @@ public class GameController implements Controller {
 		});
 
 		//initialize game
-		currentGame = new OthelloGame(6);
+		currentGame = new OthelloGame(8);
 
 		//set tokens
 		updateGameBoard();
@@ -120,7 +120,9 @@ public class GameController implements Controller {
 				if(moveAI != null) {
 					int aiRow = moveAI.get(0);
 					int aiColumn = moveAI.get(1);
-					currentGame.makeMove(aiRow, aiColumn);
+					if (currentGame.makeMove(aiRow, aiColumn))
+						System.out.println("AI move made: " + aiRow + ", " + aiColumn);
+					else System.out.println("Invalid AI move: " + aiRow + ", " + aiColumn);
 				}
 			}
 		}

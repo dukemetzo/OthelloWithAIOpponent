@@ -26,28 +26,26 @@ public class AIOpponent {
 		if (currentGame.boardSize == 4) {
 			return alphaBetaSearch(currentGame.clone());
 		} else {
-			OthelloGame clone = currentGame.clone();
-			return heuristicSearch(clone.gameState, clone.currentPlayer);
+			return heuristicSearch(currentGame.clone());
 		}
 	}
 
 	public static List<Integer> alphaBetaSearch(OthelloGame currentGame) {
-		return maxValue(currentGame.gameState, currentGame.currentPlayer, Integer.MIN_VALUE, Integer.MAX_VALUE).move;
+		return maxValue(currentGame, Integer.MIN_VALUE, Integer.MAX_VALUE).move;
 	}
 
-	public static ValueMovePair maxValue(int[][] gameState, int currentPlayer, int alpha, int beta) {
-		if (OthelloGame.evaluateGameState(gameState, currentPlayer))
-			return new ValueMovePair(calculateUtility(gameState, currentPlayer), null);
+	public static ValueMovePair maxValue(OthelloGame currentGame, int alpha, int beta) {
+		if (OthelloGame.evaluateGameState(currentGame.gameState, currentGame.currentPlayer))
+			return new ValueMovePair(calculateUtility(currentGame.gameState, currentGame.currentPlayer), null);
 		ValueMovePair pair = new ValueMovePair(Integer.MIN_VALUE, null);
-		for (Map.Entry<List<Integer>, List<List<Integer>>> successor : getSuccessors(gameState, currentPlayer).entrySet()) {
-			int[][] successorGameState = new int[gameState.length][gameState.length];
-			for (int i = 0; i < gameState.length; i++) {
-				for (int j = 0; j < gameState.length; j++) {
+		for (Map.Entry<List<Integer>, OthelloGame> successor : getSuccessors(currentGame.clone()).entrySet()) {
+			/*int[][] successorGameState = new int[currentGame.boardSize][currentGame.boardSize];
+			for (int i = 0; i < currentGame.boardSize; i++) {
+				for (int j = 0; j < currentGame.boardSize; j++) {
 					successorGameState[i][j] = successor.getValue().get(i).get(j);
 				}
-			}
-			int nextPlayer = (currentPlayer == OthelloGame.BLACK) ? OthelloGame.WHITE : OthelloGame.BLACK;
-			ValueMovePair minPair = minValue(successorGameState, nextPlayer, alpha, beta);
+			}*/
+			ValueMovePair minPair = minValue(successor.getValue(), alpha, beta);
 			if(minPair.v > pair.v) {
 				pair = new ValueMovePair(minPair.v, successor.getKey());
 			}
@@ -59,19 +57,18 @@ public class AIOpponent {
 		return pair;
 	}
 
-	public static ValueMovePair minValue(int[][] gameState, int currentPlayer, int alpha, int beta) {
-		if (OthelloGame.evaluateGameState(gameState, currentPlayer))
-			return new ValueMovePair(calculateUtility(gameState, currentPlayer), null);
+	public static ValueMovePair minValue(OthelloGame currentGame, int alpha, int beta) {
+		if (OthelloGame.evaluateGameState(currentGame.gameState, currentGame.currentPlayer))
+			return new ValueMovePair(calculateUtility(currentGame.gameState, currentGame.currentPlayer), null);
 		ValueMovePair pair = new ValueMovePair(Integer.MAX_VALUE, null);
-		for (Map.Entry<List<Integer>, List<List<Integer>>> successor : getSuccessors(gameState, currentPlayer).entrySet()) {
-			int[][] successorGameState = new int[gameState.length][gameState.length];
+		for (Map.Entry<List<Integer>, OthelloGame> successor : getSuccessors(currentGame).entrySet()) {
+			/*int[][] successorGameState = new int[gameState.length][gameState.length];
 			for (int i = 0; i < gameState.length; i++) {
 				for (int j = 0; j < gameState.length; j++) {
 					successorGameState[i][j] = successor.getValue().get(i).get(j);
 				}
-			}
-			int nextPlayer = (currentPlayer == OthelloGame.BLACK) ? OthelloGame.WHITE : OthelloGame.BLACK;
-			ValueMovePair maxPair = maxValue(successorGameState, nextPlayer, alpha, beta);
+			}*/
+			ValueMovePair maxPair = maxValue(successor.getValue(), alpha, beta);
 			if(maxPair.v < pair.v) {
 				pair = new ValueMovePair(maxPair.v, successor.getKey());
 			}
@@ -89,22 +86,25 @@ public class AIOpponent {
 		return OthelloGame.getWinner(gameState, currentPlayer);
 	}
 
-	public static List<Integer> heuristicSearch(int[][] gameState, int currentPlayer) {
+	public static List<Integer> heuristicSearch(OthelloGame currentGame) {
 		List<Integer> bestSuccessorMove = new ArrayList<>();
-		//int[][] bestSuccessorGameState = new int[gameState.length][gameState.length];
 		double bestEvaluation = Integer.MIN_VALUE;
-		for (Map.Entry<List<Integer>, List<List<Integer>>> successor : getSuccessors(gameState, currentPlayer).entrySet()) {
-			int[][] successorGameState = new int[gameState.length][gameState.length];
-			for (int i = 0; i < gameState.length; i++) {
-				for (int j = 0; j < gameState.length; j++) {
-					successorGameState[i][j] = successor.getValue().get(i).get(j);
+		for (Map.Entry<List<Integer>, OthelloGame> successor : getSuccessors(currentGame).entrySet()) {
+			/*int[][] successorGameState = new int[currentGame.boardSize][currentGame.boardSize];
+			for (int i = 0; i < currentGame.boardSize; i++) {
+				for (int j = 0; j < currentGame.boardSize; j++) {
+					successorGameState[i][j] = successor.getValue().gameState[i][j];
 				}
-			}
-			double currentEvaluation = getEvaluation(successorGameState, currentPlayer);
-			if (currentEvaluation >= bestEvaluation || bestSuccessorMove.isEmpty()) {
+			}*/
+			double currentEvaluation = getEvaluation(successor.getValue().gameState, currentGame.currentPlayer);
+			if (bestSuccessorMove.isEmpty()) {
 				bestSuccessorMove.add(successor.getKey().get(0));
 				bestSuccessorMove.add(successor.getKey().get(1));
-				//bestSuccessorGameState = successorGameState;
+				bestEvaluation = currentEvaluation;
+			}
+			if (currentEvaluation > bestEvaluation) {
+				bestSuccessorMove.set(0, successor.getKey().get(0));
+				bestSuccessorMove.set(1, successor.getKey().get(1));
 				bestEvaluation = currentEvaluation;
 			}
 		}
@@ -233,30 +233,25 @@ public class AIOpponent {
 	}*/
 
 	//Returns list of <Move, State> pairs specifying legal moves
-	public static Map<List<Integer>, List<List<Integer>>> getSuccessors(int[][] gameState, int currentPlayer) {
-		Map<List<Integer>, List<List<Integer>>> successors = new HashMap<>();
-		for (int i = 0; i < gameState.length; i++) {
-			for (int j = 0; j < gameState.length; j++) {
-				if (gameState[i][j] == 0 && OthelloGame.isValidMove(i, j, gameState, gameState.length, currentPlayer)) {
+	public static Map<List<Integer>, OthelloGame> getSuccessors(OthelloGame currentGame) {
+		Map<List<Integer>, OthelloGame> successors = new HashMap<>();
+		for (int i = 0; i < currentGame.boardSize; i++) {
+			for (int j = 0; j < currentGame.boardSize; j++) {
+				if (OthelloGame.isValidMove(i, j, currentGame.gameState, currentGame.boardSize, currentGame.currentPlayer)) {
 					//get move
 					List<Integer> move = new ArrayList<>();
 					move.add(i);
 					move.add(j);
+					System.out.println("Possible AI move: " + i + ", " + j);
 
 					//get corresponding game state
-					List<List<Integer>> newGameState = new ArrayList<>();
-					for (int[] row : OthelloGame.makeMove(i, j, gameState, currentPlayer)) {
-						List<Integer> rowList = new ArrayList<>();
-						for (int element : row) {
-							rowList.add(element);
-						}
-						newGameState.add(rowList);
-					}
+					OthelloGame nextTurn = currentGame.clone();
+					OthelloGame.makeMove(i, j, nextTurn.gameState, nextTurn.currentPlayer);
 
-					successors.put(move, newGameState);
+					successors.put(move, nextTurn);
 				}
 			}
 		}
-		return successors;
+        return successors;
 	}
 }

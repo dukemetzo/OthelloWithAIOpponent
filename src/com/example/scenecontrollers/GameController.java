@@ -7,10 +7,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -20,15 +19,23 @@ import javafx.scene.text.Text;
 import java.util.List;
 
 public class GameController implements Controller {
-	private BorderPane gameBorderPane;
+	private final BorderPane gameBorderPane;
 	private final GridPane gameBoard;
 	public OthelloGame currentGame;
 	public VBox vBoxLeft;
 	public VBox vBoxRight;
-	private Text blackScore;
-	private Text whiteScore;
+	public VBox vBoxBottom;
+	public HBox hBoxBottom;
+	public final Label placeHolderLabel = new Label("");
+	private final Text blackScore;
+	private final Text whiteScore;
+	private final Button playAgainButton = new Button("Play Again");
+	private final Button mainMenuButton = new Button("Main Menu");
+	private final boolean twoPlayer;
 
-	public GameController() {
+	public GameController(boolean twoPlayer, int boardSize) {
+		this.twoPlayer = twoPlayer;
+
 		//VBox Left
 		vBoxLeft = new VBox();
 		vBoxLeft.setPadding(new Insets(100, 100, 100, 100));
@@ -72,14 +79,46 @@ public class GameController implements Controller {
 		});
 
 		//initialize game
-		currentGame = new OthelloGame(8);
+		currentGame = new OthelloGame(boardSize);
 
 		//set tokens
 		updateGameBoard();
 
+		//VBox Bottom
+		hBoxBottom = new HBox();
+		hBoxBottom.setPadding(new Insets(10, 10, 10, 10));
+		hBoxBottom.setAlignment(Pos.CENTER);
+		hBoxBottom.setSpacing(10);
+		hBoxBottom.getChildren().addAll(playAgainButton, mainMenuButton);
+
+		vBoxBottom = new VBox();
+		vBoxBottom.setPadding(new Insets(10, 10, 10, 10));
+		vBoxBottom.setAlignment(Pos.CENTER);
+		vBoxBottom.getChildren().addAll(placeHolderLabel, hBoxBottom);
+
+		//Button presses
+		playAgainButton.setOnAction(e -> {
+			try {
+				GameController gameController = new GameController(twoPlayer, currentGame.boardSize);
+				playAgainButton.getScene().setRoot(gameController.getContent());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+
+		mainMenuButton.setOnAction(e -> {
+			try {
+				MenuController menuController = new MenuController();
+				mainMenuButton.getScene().setRoot(menuController.getContent());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+
 		gameBorderPane.setCenter(gameBoard);
 		gameBorderPane.setLeft(vBoxLeft);
 		gameBorderPane.setRight(vBoxRight);
+		gameBorderPane.setBottom(vBoxBottom);
 	}
 
 	private StackPane updateToken(int row, int col) {
@@ -96,8 +135,8 @@ public class GameController implements Controller {
 		stackPane.getChildren().add(circle);
 
 		stackPane.setOnMouseClicked(event -> {
-			if(currentGame.currentPlayer == OthelloGame.BLACK) { //user moves only black token
-				if(currentGame.makeMove(row, col)) {
+			//if(currentGame.currentPlayer == OthelloGame.BLACK) { //user moves only black token
+				if (currentGame.makeMove(row, col)) {
 					updateGameBoard();
 				} else {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -106,13 +145,13 @@ public class GameController implements Controller {
 					alert.setContentText("You cannot place a token there.");
 					alert.showAndWait();
 				}
-			}
+			//}
 		});
 		return stackPane;
 	}
 
 	private void updateGameBoard() {
-		if(currentGame.currentPlayer == OthelloGame.WHITE) { //AI Opponent is always white player
+		if(currentGame.currentPlayer == OthelloGame.WHITE && !twoPlayer) { //AI Opponent is always white player
 			if (OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.WHITE)) {
 				currentGame.currentPlayer = OthelloGame.BLACK;
 			} else {
@@ -131,6 +170,12 @@ public class GameController implements Controller {
 				gameBoard.add(playedToken, i, j);
 			}
 		}
+		if (OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.BLACK) &&
+				!OthelloGame.evaluateGameState(currentGame.gameState, OthelloGame.WHITE) &&
+				!twoPlayer) {
+			currentGame.currentPlayer = OthelloGame.WHITE;
+			updateGameBoard();
+		}
 		if (currentGame.evaluateGameState()) {
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 			alert.setTitle("Game Over");
@@ -144,7 +189,6 @@ public class GameController implements Controller {
 			}
 			alert.showAndWait();
 		}
-
 	}
 
 	@Override

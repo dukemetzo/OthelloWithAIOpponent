@@ -6,6 +6,26 @@ import java.util.List;
 import java.util.Map;
 
 public class AIOpponent {
+	private static final int[][] positionalWeights_6x6 = {
+			{100, -20, 10, 10, -20, 100},
+			{-20, -50, -2, -2, -50, -20},
+			{10,   -2,  0,  0, -2,   10},
+			{10,   -2,  0,  0, -2,   10},
+			{-20, -50, -2, -2, -50, -20},
+			{100, -20, 10, 10, -20, 100}
+	};
+	private static final int[][] positionalWeights_8x8 = {
+			{ 100, -20, 10,  5,  5, 10, -20, 100 },
+			{ -20, -50, -2, -2, -2, -2, -50, -20 },
+			{  10,  -2,  5,  1,  1,  5,  -2,  10 },
+			{   5,  -2,  1,  0,  0,  1,  -2,   5 },
+			{   5,  -2,  1,  0,  0,  1,  -2,   5 },
+			{  10,  -2,  5,  1,  1,  5,  -2,  10 },
+			{ -20, -50, -2, -2, -2, -2, -50, -20 },
+			{ 100, -20, 10,  5,  5, 10, -20, 100 }
+	};
+	private static final double positionalWeight = 0.9;
+	private static final double mobilityWeight = 0.3;
 
 	static class ValueMovePair {
 		int v;
@@ -75,6 +95,16 @@ public class AIOpponent {
 		List<Integer> bestSuccessorMove = new ArrayList<>();
 		double bestEvaluation = Integer.MIN_VALUE;
 		for (Map.Entry<List<Integer>, OthelloGame> successor : getSuccessors(currentGame).entrySet()) {
+			/**
+			 * Alternative evaluation using weights assigned to each position
+			 */
+			/*double currentEvaluation = 0;
+			if (currentGame.boardSize == 6) {
+				currentEvaluation = getEvaluation_6x6(successor.getValue().gameState, currentGame.currentPlayer);
+			} else if (currentGame.boardSize == 8) {
+				currentEvaluation = getEvaluation_8x8(successor.getValue().gameState, currentGame.currentPlayer);
+			}
+			 */
 			double currentEvaluation = getEvaluation(successor.getValue().gameState, currentGame.currentPlayer);
 			if (bestSuccessorMove.isEmpty()) {
 				bestSuccessorMove.add(successor.getKey().get(0));
@@ -91,11 +121,6 @@ public class AIOpponent {
 	}
 
 	public static double getEvaluation(int[][] gameState, int currentPlayer) {
-		/*double diskParity = getDiskParity(gameState, currentPlayer);
-		double mobility = getMobility(gameState, currentPlayer);
-		double cornerOccupancy = getCornerOccupancy(gameState, currentPlayer);
-		double cornerCloseness = getCornerCloseness(gameState, currentPlayer);
-		return ((25 * diskParity) + (5 * mobility) + (30 * cornerOccupancy) - (25 * cornerCloseness)) / 35;*/
 		int whiteCorners = 0, whiteCornerDanger = 0, blackCorners = 0, blackCornerDanger = 0;
 		int[] cornerOccupancy = getCornerOccupancy(gameState);
 		int[][] nearCorners = getNearCorners(gameState);
@@ -151,24 +176,6 @@ public class AIOpponent {
 		}
 	}
 
-	/*
-	public static double getCornerOccupancy(int[][] gameState, int currentPlayer) {
-		int whiteCorners = 0;
-		int blackCorners = 0;
-		if (gameState[0][0] == OthelloGame.WHITE) whiteCorners++;
-		else if (gameState[0][0] == OthelloGame.BLACK) blackCorners++;
-		if (gameState[0][gameState.length - 1] == OthelloGame.WHITE) whiteCorners++;
-		else if (gameState[0][gameState.length - 1] == OthelloGame.BLACK) blackCorners++;
-		if (gameState[gameState.length - 1][0] == OthelloGame.WHITE) whiteCorners++;
-		else if (gameState[gameState.length - 1][0] == OthelloGame.BLACK) blackCorners++;
-		if (gameState[gameState.length - 1][gameState.length - 1] == OthelloGame.WHITE) whiteCorners++;
-		else if (gameState[gameState.length - 1][gameState.length - 1] == OthelloGame.BLACK) blackCorners++;
-		if (currentPlayer == OthelloGame.WHITE) {
-			return (double) whiteCorners / 4;
-		} else
-			return (double) blackCorners / 4;
-	}*/
-
 	public static int[] getCornerOccupancy(int[][] gameState) {
 		//index 0=[0][0], 1=[0][boardSize-1], 2=[boardSize-1][0], 3=[boardSize-1][boardSize-1]
 		int[] corners = {0, 0, 0, 0};
@@ -182,49 +189,6 @@ public class AIOpponent {
 		else if (gameState[gameState.length - 1][gameState.length - 1] == OthelloGame.WHITE) corners[3] = OthelloGame.WHITE;
 		return corners;
 	}
-
-	/*
-	public static double getCornerCloseness(int[][] gameState, int currentPlayer) {
-		int whiteNearCorners = 0;
-		int blackNearCorners = 0;
-		if (gameState[0][0] == 0) {
-			if (gameState[0][1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[0][1] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[1][1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[1][1] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[1][0] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[1][0] == OthelloGame.BLACK) blackNearCorners++;
-		}
-		if (gameState[0][gameState.length - 1] == 0) {
-			if (gameState[0][gameState.length - 2] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[0][gameState.length - 2] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[1][gameState.length - 2] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[1][gameState.length - 2] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[1][gameState.length - 1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[1][gameState.length - 1] == OthelloGame.BLACK) blackNearCorners++;
-		}
-		if (gameState[gameState.length - 1][0] == 0) {
-			if (gameState[gameState.length - 1][1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 1][1] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[gameState.length - 2][1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 2][1] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[gameState.length - 2][0] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 2][0] == OthelloGame.BLACK) blackNearCorners++;
-		}
-		if (gameState[gameState.length - 1][gameState.length - 1] == 0) {
-			if (gameState[gameState.length - 2][gameState.length - 1] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 2][gameState.length - 1] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[gameState.length - 2][gameState.length - 2] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 2][gameState.length - 2] == OthelloGame.BLACK) blackNearCorners++;
-			if (gameState[gameState.length - 1][gameState.length - 2] == OthelloGame.WHITE) whiteNearCorners++;
-			else if (gameState[gameState.length - 1][gameState.length - 2] == OthelloGame.BLACK) blackNearCorners++;
-		}
-		if (currentPlayer == OthelloGame.WHITE) {
-			return (double) (whiteNearCorners - blackNearCorners) / 12;
-		} else {
-			return (double) (blackNearCorners - whiteNearCorners) / 12;
-		}
-	}*/
 
 	public static int[][] getNearCorners(int[][] gameState) {
 		//first subarray corresponds to top left, second to top right, third to bottom left, last to bottom right
@@ -264,31 +228,85 @@ public class AIOpponent {
 		return nearCorners;
 	}
 
-	/*public static double getStability(int[][] gameState, int currentPlayer) {
-		int whiteStableTokens = 0, whiteSemiStableTokens = 0, whiteUnstableTokens = 0;
-		int blackStableTokens = 0, blackSemiStableTokens = 0, blackUnstableTokens = 0;
-		for (int i = 0; i < gameState.length; i++) {
-			if (i == 0 || i == gameState.length - 1) {
-				if (gameState[i][0] == OthelloGame.WHITE) {
-					whiteStableTokens++;
-					if
-				} else if (gameState[i][gameState.length - 1] == OthelloGame.WHITE) {
-					whiteStableTokens++;
-				}
+	public static double getEvaluation_6x6(int[][] gameState, int currentPlayer) {
+		int opponent;
+		if(currentPlayer == OthelloGame.BLACK) {
+			opponent = OthelloGame.WHITE;
+		}else {
+			opponent = OthelloGame.BLACK;
+		}
 
-			}
-			for (int j = 0; j < gameState.length; j++) {
-				//count stable tokens
-				if (((i == 0 && j == 0) || (i == 0 && j == gameState.length - 1) ||
-						(i == gameState.length - 1 && j == gameState.length - 1) ||
-						(i == gameState.length - 1 && j == 0)) && gameState[i][j] != 0) {
-					if (gameState[i][j] == OthelloGame.WHITE) whiteStableTokens++;
-					else blackStableTokens++;
-				} else if ()
+		//set variables to 0, mobility is # of avail moves
+		//posScore helps favor corners & edges
+		int currentMobility = 0, opponentMobility = 0 , currentPositionalScore = 0,
+				opponentPositionalScore = 0;
+
+		//check for valid moves.
+		for(int i = 0; i < gameState.length; i++) {
+			for(int j = 0; j < gameState.length; j++) {
+				//mobility increases for each valid move
+				if(OthelloGame.isValidMove(i, j, gameState, gameState.length, currentPlayer)) {
+					currentMobility++;
+				}
+				if(OthelloGame.isValidMove(i, j, gameState, gameState.length, opponent)) {
+					opponentMobility++;
+				}
+				//add to positional score based on values in positionalWeights_6x6
+				if(gameState[i][j] == currentPlayer) {
+					currentPositionalScore += positionalWeights_6x6[i][j];
+				}else if(gameState[i][j] == opponent) {
+					opponentPositionalScore += positionalWeights_6x6[i][j];
+				}
 			}
 		}
-		return 0;
-	}*/
+
+		double mobilityScore = 0;
+		if(currentMobility + opponentMobility != 0) { //don't want to divide by zero!
+			//divide mobility advantage by total mobility advantage
+			//multiply  by 100 to find percent better score (idk if needed??)
+			mobilityScore = 100.0 * (currentMobility - opponentMobility) / (currentMobility + opponentMobility);
+		}
+		//calculate positional advantage
+		double positionalScore = currentPositionalScore - opponentPositionalScore;
+		//return weighted score
+		return positionalWeight*positionalScore + mobilityWeight*mobilityScore;
+	}
+
+	//same a 6x6 but 8x8 variables
+	public static double getEvaluation_8x8(int[][] gameState, int currentPlayer) {
+		int opponent;
+		if(currentPlayer == OthelloGame.BLACK) {
+			opponent = OthelloGame.WHITE;
+		}else {
+			opponent = OthelloGame.BLACK;
+		}
+
+		int currentMobility = 0, opponentMobility = 0 , currentPositionalScore = 0,
+				opponentPositionalScore = 0;
+
+		for(int i = 0; i < gameState.length; i++) {
+			for(int j = 0; j < gameState.length; j++) {
+				if(OthelloGame.isValidMove(i, j, gameState, gameState.length, currentPlayer)) {
+					currentMobility++;
+				}
+				if(OthelloGame.isValidMove(i, j, gameState, gameState.length, opponent)) {
+					opponentMobility++;
+				}
+				if(gameState[i][j] == currentPlayer) {
+					currentPositionalScore += positionalWeights_8x8[i][j];
+				}else if(gameState[i][j] == opponent) {
+					opponentPositionalScore += positionalWeights_8x8[i][j];
+				}
+			}
+		}
+
+		double mobilityScore = 0;
+		if(currentMobility + opponentMobility != 0) {
+			mobilityScore = 100.0 * (currentMobility - opponentMobility) / (currentMobility + opponentMobility);
+		}
+		double positionalScore = currentPositionalScore - opponentPositionalScore;
+		return positionalWeight*positionalScore + mobilityWeight*mobilityScore;
+	}
 
 	//Returns list of <Move, State> pairs specifying legal moves
 	public static Map<List<Integer>, OthelloGame> getSuccessors(OthelloGame currentGame) {

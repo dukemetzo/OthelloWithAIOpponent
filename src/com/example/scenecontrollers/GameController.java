@@ -21,6 +21,8 @@ import java.util.List;
 public class GameController implements Controller {
 	private final BorderPane gameBorderPane;
 	private final GridPane gameBoard;
+	//private final HBox headerHBox;
+	//private final Text headerText;
 	public OthelloGame currentGame;
 	public VBox vBoxLeft;
 	public VBox vBoxRight;
@@ -36,6 +38,19 @@ public class GameController implements Controller {
 	public GameController(boolean twoPlayer, int boardSize) {
 		this.twoPlayer = twoPlayer;
 
+		/*//Header
+		headerHBox = new HBox();
+		headerHBox.setPadding(new Insets(10, 10, 10, 10));
+		headerHBox.setAlignment(Pos.CENTER);
+		headerHBox.setStyle("-fx-background-color: #000000;");
+		headerText = new Text();
+		headerText.setX(50.0f);
+		headerText.setY(50.0f);
+		headerText.setText("Othello vs. AI");
+		headerText.setFill(Color.WHITE);
+		headerText.setFont(Font.font(null, FontWeight.BOLD, 50));
+		headerHBox.getChildren().add(headerText);*/
+
 		//VBox Left
 		vBoxLeft = new VBox();
 		vBoxLeft.setPadding(new Insets(100, 100, 100, 100));
@@ -44,7 +59,7 @@ public class GameController implements Controller {
 		blackScore = new Text();
 		blackScore.setX(50.0f);
 		blackScore.setY(50.0f);
-		blackScore.setText("00");
+		blackScore.setText("02");
 		blackScore.setFill(Color.WHITE);
 		blackScore.setFont(Font.font(null, FontWeight.BOLD, 50));
 		vBoxLeft.getChildren().add(blackScore);
@@ -57,7 +72,7 @@ public class GameController implements Controller {
 		whiteScore = new Text();
 		whiteScore.setX(50.0f);
 		whiteScore.setY(50.0f);
-		whiteScore.setText("00");
+		whiteScore.setText("02");
 		whiteScore.setFill(Color.BLACK);
 		whiteScore.setFont(Font.font(null, FontWeight.BOLD, 50));
 		vBoxRight.getChildren().add(whiteScore);
@@ -115,6 +130,7 @@ public class GameController implements Controller {
 			}
 		});
 
+		//gameBorderPane.setTop(headerHBox);
 		gameBorderPane.setCenter(gameBoard);
 		gameBorderPane.setLeft(vBoxLeft);
 		gameBorderPane.setRight(vBoxRight);

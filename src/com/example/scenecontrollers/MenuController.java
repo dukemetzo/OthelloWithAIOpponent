@@ -8,10 +8,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 public class MenuController implements Controller {
     private final BorderPane menuBorderPane;
     private final GridPane gameBoard;
+    //private final HBox headerHBox;
+    //private final Text headerText;
     private final VBox menuVBox;
     private final HBox menuHBox;
     private final Label playGameLabel = new Label("Play Now?");
@@ -38,6 +43,19 @@ public class MenuController implements Controller {
                 gameBoard.add(stackPane, i, j);
             }
         }
+
+        /*//Header
+        headerHBox = new HBox();
+        headerHBox.setPadding(new Insets(10, 10, 10, 10));
+        headerHBox.setAlignment(Pos.CENTER);
+        headerHBox.setStyle("-fx-background-color: #000000;");
+        headerText = new Text();
+        headerText.setX(50.0f);
+        headerText.setY(50.0f);
+        headerText.setText("Othello vs. AI");
+        headerText.setFill(Color.WHITE);
+        headerText.setFont(Font.font(null, FontWeight.BOLD, 50));
+        headerHBox.getChildren().add(headerText);*/
 
         //Menu layout
         menuHBox = new HBox();
@@ -72,6 +90,7 @@ public class MenuController implements Controller {
 
         //add VBox to BorderPane
         menuBorderPane = new BorderPane();
+        //menuBorderPane.setTop(headerHBox);
         menuBorderPane.setCenter(gameBoard);
         menuBorderPane.setBottom(menuVBox);
     }

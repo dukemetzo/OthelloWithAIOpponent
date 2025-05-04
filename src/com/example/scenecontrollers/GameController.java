@@ -80,7 +80,11 @@ public class GameController implements Controller {
 
 		//initialize game
 		currentGame = new OthelloGame(boardSize);
-
+		
+		//makes sure initial score is 2-2
+		blackScore.setText("" + currentGame.getBlackScore());
+		whiteScore.setText("" + currentGame.getWhiteScore());
+		
 		//set tokens
 		updateGameBoard();
 

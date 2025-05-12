@@ -95,6 +95,7 @@ public class AIOpponent {
 		List<Integer> bestSuccessorMove = new ArrayList<>();
 		double bestEvaluation = Integer.MIN_VALUE;
 		for (Map.Entry<List<Integer>, OthelloGame> successor : getSuccessors(currentGame).entrySet()) {
+			double currentEvaluation = getEvaluation(successor.getValue().gameState, currentGame.currentPlayer);
 			/**
 			 * Alternative evaluation using weights assigned to each position
 			 */
@@ -105,7 +106,6 @@ public class AIOpponent {
 				currentEvaluation = getEvaluation_8x8(successor.getValue().gameState, currentGame.currentPlayer);
 			}
 			 */
-			double currentEvaluation = getEvaluation(successor.getValue().gameState, currentGame.currentPlayer);
 			if (bestSuccessorMove.isEmpty()) {
 				bestSuccessorMove.add(successor.getKey().get(0));
 				bestSuccessorMove.add(successor.getKey().get(1));
@@ -272,7 +272,7 @@ public class AIOpponent {
 		return positionalWeight*positionalScore + mobilityWeight*mobilityScore;
 	}
 
-	//same a 6x6 but 8x8 variables
+	//same as 6x6 but 8x8 variables
 	public static double getEvaluation_8x8(int[][] gameState, int currentPlayer) {
 		int opponent;
 		if(currentPlayer == OthelloGame.BLACK) {

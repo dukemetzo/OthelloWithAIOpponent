@@ -21,8 +21,6 @@ import java.util.List;
 public class GameController implements Controller {
 	private final BorderPane gameBorderPane;
 	private final GridPane gameBoard;
-	//private final HBox headerHBox;
-	//private final Text headerText;
 	public OthelloGame currentGame;
 	public VBox vBoxLeft;
 	public VBox vBoxRight;
@@ -37,19 +35,6 @@ public class GameController implements Controller {
 
 	public GameController(boolean twoPlayer, int boardSize) {
 		this.twoPlayer = twoPlayer;
-
-		/*//Header
-		headerHBox = new HBox();
-		headerHBox.setPadding(new Insets(10, 10, 10, 10));
-		headerHBox.setAlignment(Pos.CENTER);
-		headerHBox.setStyle("-fx-background-color: #000000;");
-		headerText = new Text();
-		headerText.setX(50.0f);
-		headerText.setY(50.0f);
-		headerText.setText("Othello vs. AI");
-		headerText.setFill(Color.WHITE);
-		headerText.setFont(Font.font(null, FontWeight.BOLD, 50));
-		headerHBox.getChildren().add(headerText);*/
 
 		//VBox Left
 		vBoxLeft = new VBox();
@@ -151,17 +136,15 @@ public class GameController implements Controller {
 		stackPane.getChildren().add(circle);
 
 		stackPane.setOnMouseClicked(event -> {
-			//if(currentGame.currentPlayer == OthelloGame.BLACK) { //user moves only black token
-				if (currentGame.makeMove(row, col)) {
-					updateGameBoard();
-				} else {
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.setTitle("Invalid Move");
-					alert.setHeaderText(null);
-					alert.setContentText("You cannot place a token there.");
-					alert.showAndWait();
-				}
-			//}
+			if (currentGame.makeMove(row, col)) {
+				updateGameBoard();
+			} else {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Invalid Move");
+				alert.setHeaderText(null);
+				alert.setContentText("You cannot place a token there.");
+				alert.showAndWait();
+			}
 		});
 		return stackPane;
 	}
